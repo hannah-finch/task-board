@@ -63,6 +63,7 @@
 
     <div class="row swim-lanes text-center justify-content-between">
       <div class="col-12 col-lg-4 d-flex">
+        <!-- container for all to-do -->
         <div id="to-do" class="card border-light mb-3 lane flex-grow-1">
           <div class="card-header bg-white">
             <h2 class="card-title mb-1">To Do</h2>
@@ -70,13 +71,6 @@
           <div class="card-body bg-light">
             <div id="todo-cards">
               <!-- Example project cards to be constructed with JavaScript, here temporarily to style -->
-              <div class="card m-4 mt-2">
-                <h5 class="card-header">Featured</h5>
-                <div class="card-body">
-                  <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                  <button class="btn btn-danger">Delete</button>
-                </div>
-              </div>
               <div class="card m-4 mt-2 bg-warning text-white">
                 <h5 class="card-header">Featured</h5>
                 <div class="card-body">
@@ -92,14 +86,12 @@
                 </div>
               </div>
 
-
-
-
             </div>
           </div>
         </div>
       </div>
       <div class="col-12 col-lg-4 d-flex">
+        <!-- container for all in-progress -->
         <div id="in-progress" class="card border-light mb-3 lane flex-grow-1">
           <div class="card-header bg-white">
             <h2 class="card-title mb-1">In Progress</h2>
@@ -108,16 +100,17 @@
             <div id="in-progress-cards"></div>
           </div>
         </div>
+      </div>
+      <div class="col-12 col-lg-4 d-flex">
+        <!-- container for all done -->
+        <div id="done" class="card border-light mb-3 lane flex-grow-1">
+          <div class="card-header bg-white">
+            <h2 class="card-title mb-1">Done</h2>
+          </div>
+          <div class="card-body bg-light">
+            <div id="done-cards"></div>
         </div>
-        <div class="col-12 col-lg-4 d-flex">
-          <div id="done" class="card border-light mb-3 lane flex-grow-1">
-            <div class="card-header bg-white">
-              <h2 class="card-title mb-1">Done</h2>
-            </div>
-            <div class="card-body bg-light">
-              <div id="done-cards"></div>
-          </div>
-          </div>
+      </div>
       </div>
     </div>
   </div>
