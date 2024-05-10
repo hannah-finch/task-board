@@ -34,8 +34,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <!-- form to add new task -->
             <form>
-              <div class="row mb-3"> <!-- container for task title and due date inputs -->
+              <!-- container for task title and due date inputs -->
+              <div class="row mb-3"> 
                 <div class="w-50">
                   <label for="task-title" class="form-label">Task Title</label>
                   <input type="text" id="task-title" class="form-control">
@@ -45,7 +47,8 @@
                   <input type="text" id="task-due-date" class="form-control">
                 </div>
               </div>
-              <div class="mb-4"> <!-- container for task description input -->
+              <!-- container for task description input -->
+              <div class="mb-4"> 
                 <label for="task-description" class="form-label">Task Description</label>
                 <textarea id="task-description" class="form-control"></textarea>
               </div>
@@ -65,7 +68,34 @@
             <h2 class="card-title mb-1">To Do</h2>
           </div>
           <div class="card-body bg-light">
-            <div id="todo-cards"></div>
+            <div id="todo-cards">
+              <!-- Example project cards to be constructed with JavaScript, here temporarily to style -->
+              <div class="card m-4 mt-2">
+                <h5 class="card-header">Featured</h5>
+                <div class="card-body">
+                  <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                  <button class="btn btn-danger">Delete</button>
+                </div>
+              </div>
+              <div class="card m-4 mt-2 bg-warning text-white">
+                <h5 class="card-header">Featured</h5>
+                <div class="card-body">
+                  <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                  <a class="btn btn-danger">Delete</a>
+                </div>
+              </div>
+              <div class="card m-4 mt-2 bg-danger text-white">
+                <h5 class="card-header">Featured</h5>
+                <div class="card-body">
+                  <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                  <a class="btn btn-daner border border-white text-white">Delete</a>
+                </div>
+              </div>
+
+
+
+
+            </div>
           </div>
         </div>
       </div>
