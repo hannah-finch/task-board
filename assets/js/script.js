@@ -24,10 +24,11 @@ If a user clicks the delete button
 */
 
 
-
+// This is an example task list so I could test the renderTaskList function.
+// const taskList = [{title : 'To do', description: 'test description', date: 'Test date', status: 'todo',}, {title : 'In progress', description: 'test description', date: 'Test date', status: 'in-progress',}, {title : 'Done', description: 'test description', date: 'Test date', status: 'done',},]
 
 // Retrieve tasks and nextId from localStorage
-// let taskList = JSON.parse(localStorage.getItem("tasks"));
+let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
 // Todo: create a function to generate a unique task id
@@ -73,30 +74,44 @@ function createTaskCard(task) {
     </div>
   `);
   }
+
+  $('.task-card').draggable({
+    revert: "invalid",
+  })
 }
 
-// This is an example task list so I could test the renderTaskList function.
-const taskList = [{title : 'To do', description: 'test description', date: 'Test date', status: 'todo',}, {title : 'In progress', description: 'test description', date: 'Test date', status: 'in-progress',}, {title : 'Done', description: 'test description', date: 'Test date', status: 'done',},]
+
 
 // Todo: create a function to render the task list and make cards draggable
 // This will run the createTaskCard function for every task in the taskList. This function will run on page load
+// The todo suggestion is to make the cards draggable in this function, but I did it in the createTaskCard function so it would apply to new cards as well
 function renderTaskList() {
   taskList.forEach(task => {
     createTaskCard(task);
   });
 
-  // This makes each card draggable
-  $('.task-card').draggable({
-    revert: "invalid",
-  })
-
 }
-
-renderTaskList();
 
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
+  // this function should use form data to make a new task, add it to the taskList, and maybe also create a card for it?
+  const taskTitleInput = $('#task-title');
+  const taskDescriptionInput = $('#task-description');
+  const taskDateInput = $('#task-date');
 
+  let task = {
+    title : taskTitleInput.val(),
+    description : taskDescriptionInput.val(),
+    date : taskDateInput.val(),
+    status : 'todo',
+  }
+
+  taskList.push(task);
+  localStorage.setItem('tasks', JSON.stringify(taskList));
+
+  console.log(taskList);
+
+  createTaskCard(task);
 }
 
 // Todo: create a function to handle deleting a task
@@ -111,5 +126,15 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
+  renderTaskList();
+
+  const submitTask = $('#submit-task');
+
+  submitTask.on('click', function (event) {
+    event.preventDefault();
+    handleAddTask();
+    // generateTaskId();
+    // createTaskCard();
+  })
 
 });
