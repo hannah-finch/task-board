@@ -1,27 +1,21 @@
 /*
-Left to do:
-- Write handle drop function
-- Make add task modal button also close modal
-- Would be cool to sort taskList by due date instead of index so due soon goes to top of list
-
+Ideas for improvement
+- Sort taskList by due date instead of index so due soon goes to top of list
+- Get the cards to drop in place without reloading the page... running the renderTaskList function again will duplicate all the cards, so I'd have to clear all the cards first. It also leaves the dropped card (duplicated) right where it is. Changing the css position of the dropped card to relative has so far not worked either.
+Oh maybe....innerHTML="" and then renderTaskList. Try that later
 */
-
-
-
 
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
-const body = $('body');
-
-// Todo: create a function to generate a unique task id
+// Generate a unique task id
+// This is vital to delete and arrange tasks
 function generateTaskId() {
+  // generate nextId by getting it's timestamp, save in storage
   nextId = $.now();
   localStorage.setItem('nextId', nextId);
 }
-// the id of the card should be the same value as the taskId in storage, so I can find the card id to get the storage with same taskId to delete.
-
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
@@ -60,43 +54,16 @@ function createTaskCard(task) {
     }
   }
   
-
- 
-
-
-  // const today = dayjs();
-  // let dueDate= dayjs(task.date);
-
-  // if (dueDate.isSame(today, 'day')) {
-
-  // }
-
-  // // maybe get element of matching id and change color
-  //   let dueTask = taskList.find(task => (dayjs(task.date) == dayjs()));
-
-  //   let dueTaskId = dueTask.id;
-  //   console.log(dueTaskId);
-  //   // $(`#${dueTaskId}`).addClass('bg-warning text-white');
-
-
-
+  // generate a new taskID each time a task is made
   generateTaskId();
 
+  // make the task cards draggable
   $('.task-card').draggable({
     revert: "invalid",
     zIndex: 100,
     appendTo: '.drop',
   })
 }
-
-// function cardColor(task) {
-//   const today = dayjs();
-//   let dueDate= dayjs(task.date);
-
-//   if (dueDate.isSame(today, 'day')) {
-//     taskCardEl.child.addClass('due-today')
-//   }
-// }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
@@ -130,9 +97,7 @@ function handleAddTask(event){
   createTaskCard(task);
 }
 
-// Todo: create a function to handle deleting a task
-// How I'm thinking this might work... I know I can delete the element from the page by getting the button's parents with class .taskCard. I also need to get task from array with taskID matching the id of the card. Actually, moving that id off the card and on to the button instead should save a step.
-//So maybe... get id of button and make it a variable... get task from array with taskId == variable... delete that task from the array... update the array in storage... then delete the taskCard element.
+// Function to handle deleting a task
 
 function handleDeleteTask(event){
   //gets the id of the task card (which I've set to coordinate with its task in storage, see createTaskCard function)
@@ -151,31 +116,28 @@ function handleDeleteTask(event){
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
-// when something is dropped, it's status attribute should update, if dropped in done, it's extra background/text color classes and such should be removed... Wait I have to have it saved in local, so I'll have to get the task with matching Id as a variable, change its status property, and save it back into storage... It's in an array, so I'll probably have to reset the whole array with that object updated
-// maybe when I drop it has to update the array, clear all the cards, and re render them? Then it'd be sorted... seems too messy to be right
-// so maybe... if get task of matching id... if dropped on #to-do-cards, change status property to todo, on #in-progress-cards change to in-progress, on #done change status to done AND remove extra classes from the element... update the task in the array... update the array in local storage
+// I actually wrote this below on page load, consider moving it here, or delete this function
 function handleDrop(event, ui) {
-  // let thisCard = $(this);
-  // let taskId = $('.task-card').attr('id');
 
-  // let taskId = ui.draggable.attr('id');
-  // alert(taskId);
 }
 
-// Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+// When the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
-
+  //render task cards on page load
   renderTaskList();
 
-  // make the input a date picker
+  // make the date input a date picker
   $('#task-date').datepicker();
 
+  // make submit task button handleAddTask
   const submitTask = $('#submit-task');
   submitTask.on('click', function(event) {
     event.preventDefault();
     handleAddTask();
   });
 
+  // handleDeleteTask on click of any delete button in body
+  const body = $('body');
   body.on('click', '.delete', handleDeleteTask);
 
   $(".drop").droppable({
@@ -194,32 +156,12 @@ $(document).ready(function () {
       console.log(taskList);
 
       // reloads the page so the cards are rendered in their lanes, not overlapping and not hidden under the lane.
-      // I bet there is a better way to do this... running the renderTaskList function again will duplicate all the cards, so I'd have to clear all the cards first. It also leaves the dropped card (duplicated) right where it is. Changing the css position of the dropped card to relative has so far not worked either.
-      //Oh maybe....innerHTML="" and then renderTaskList. Try that later
       location.reload();
 
+      // Currently this function is not necessary
       handleDrop();
     }
 
   });
 });
-
-/*
-pseudo-code a drop:
-
-on drop...
-- get the object from the array that matches the id of the delete button (maybe I should put the id on the div instead of button?)
-- change that object's status attribute
-- update the array in storage
-
-- append the element to the new parent (see if that one div is taking whole space or not)
-- make the element snap in line
-  - maybe either make the element's position be relative to parent
-  - or maybe sort the parent according to id#
-  - or maybe look into the sortable attribute
-
-
-
-*/
-
 
