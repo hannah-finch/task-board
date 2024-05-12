@@ -1,9 +1,8 @@
 /*
 Left to do:
 - Write handle drop function
-- Make date input fancy with jQuery ui
-- Make color change when due and past due
 - Make add task modal button also close modal
+- Would be cool to sort taskList by due date instead of index so due soon goes to top of list
 
 */
 
@@ -33,7 +32,7 @@ function createTaskCard(task) {
       <div class="card-body">
         <p class="card-text">${task.description}</p>
         <p class="card-text">${task.date}</p>
-        <button class="btn btn-danger delete">Delete</button>
+        <button class="btn btn-danger border border-white delete">Delete</button>
       </div>
     </div>`);
 
@@ -55,9 +54,9 @@ function createTaskCard(task) {
   // only adds class if not done
   if (task.status != "done-cards") {
     if (dueDate.isSame(today, 'day')) {
-      taskCardEl.addClass('due-today')
+      taskCardEl.addClass('bg-warning text-white')
     } else if (dueDate.isBefore(today, 'day')) {
-      taskCardEl.addClass('past-due')
+      taskCardEl.addClass('bg-danger text-white');
     }
   }
   
