@@ -5,33 +5,8 @@ Left to do:
 - Make color change when due and past due
 - Make add task modal button also close modal
 
-PSEUDO CODE:
-
-After the page loads:
-  - task cards should render sorted according to status
-If a user adds a task:
-  - a unique id is generated for the task
-  - the task is assigned a to-do status
-  - the task is saved to local storage
-  - the task is added to the to-do lane
-If a user drags the task:
-  - the position should update to append or snap in line with the parent lane
-  If the task is dropped in the progress lane
-    - the status should be updated to in-progress
-    - the new status should be updated in local storage
-  IF the task is dropped in the done lane
-    - the status should be updated to done
-    - any bg-warning text-white border border-white classes should be removed
-    - the new status should be updated to done
-If a user clicks the delete button
-  - the associated task of that id should be deleted from local storage
-  - the task card element should also be deleted
-
 */
 
-
-// This is an example task list so I could test the renderTaskList function.
-// const taskList = [{title : 'To do', description: 'test description', date: 'Test date', status: 'todo-cards', taskId: 1,}, {title : 'In progress', description: 'test description', date: 'Test date', status: 'in-progress-cards', taskId: 2,}, {title : 'Done', description: 'test description', date: 'Test date', status: 'done-cards', taskId: 3,},]
 
 
 
@@ -51,21 +26,9 @@ function generateTaskId() {
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
-  // // const today = dayjs();
-  // // let dueDate= dayjs(task.date);
-
-  // // if (dueDate.isSame(today, 'day')) {
-  // // maybe get element of matching id and change color
-  //   let dueTask = taskList.find(task => (dayjs(task.date) == dayjs()));
-
-  //   let dueTaskId = dueTask.id;
-  //   console.log(dueTaskId);
-  //   // $(`#${dueTaskId}`).addClass('bg-warning text-white');
-
-  
-
+ 
   const taskCardEl =
-  (`<div class = "task-card card m-4 mt-2" id=${task.taskId}>
+  $(`<div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
@@ -74,13 +37,49 @@ function createTaskCard(task) {
       </div>
     </div>`);
 
+  // append card to right section (maybe this could go in render function?)
   if (task.status == "done-cards") {
     $('#done-cards').append(taskCardEl);
-  } else if (task.status == "in-progress-cards") {
+  } 
+  else if (task.status == "in-progress-cards") {
     $('#in-progress-cards').append(taskCardEl);
-  } else {
+  } 
+  else {
     $('#todo-cards').append(taskCardEl);
   }
+
+  // use dayjs to add classes if something is due or past due
+  const today = dayjs();
+  let dueDate= dayjs(task.date);
+  
+  // only adds class if not done
+  if (task.status != "done-cards") {
+    if (dueDate.isSame(today, 'day')) {
+      taskCardEl.addClass('due-today')
+    } else if (dueDate.isBefore(today, 'day')) {
+      taskCardEl.addClass('past-due')
+    }
+  }
+  
+
+ 
+
+
+  // const today = dayjs();
+  // let dueDate= dayjs(task.date);
+
+  // if (dueDate.isSame(today, 'day')) {
+
+  // }
+
+  // // maybe get element of matching id and change color
+  //   let dueTask = taskList.find(task => (dayjs(task.date) == dayjs()));
+
+  //   let dueTaskId = dueTask.id;
+  //   console.log(dueTaskId);
+  //   // $(`#${dueTaskId}`).addClass('bg-warning text-white');
+
+
 
   generateTaskId();
 
@@ -91,10 +90,20 @@ function createTaskCard(task) {
   })
 }
 
+// function cardColor(task) {
+//   const today = dayjs();
+//   let dueDate= dayjs(task.date);
+
+//   if (dueDate.isSame(today, 'day')) {
+//     taskCardEl.child.addClass('due-today')
+//   }
+// }
+
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
   taskList.forEach(task => {
     createTaskCard(task);
+    // cardColor(task);
   });
 }
 
@@ -161,16 +170,6 @@ $(document).ready(function () {
 
   // make the input a date picker
   $('#task-date').datepicker();
-
-  // use day.js to determine if task should be changed color
-  // function cardColor() {
-  //   let dueDate= task.date;
-  //   if (dueDate.isToday()) {
-  //     $('.task-card').addClass('bg-warning text-white')
-  //   }
-  // }
-
-
 
   const submitTask = $('#submit-task');
   submitTask.on('click', function(event) {

@@ -19,3 +19,11 @@ body {
   /* set height to 100% so it fills the lane and things can drop on it */
   height: 100%;
 }
+
+.due-today {
+  background-color: aqua;
+}
+
+.past-due {
+  background-color: green;
+}
