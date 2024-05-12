@@ -1,9 +1,8 @@
 /*
 Left to do:
-- Write delete function
 - Write handle drop function
-- Make lanes droppable
 - Make date input fancy with jQuery ui
+- Make color change when due and past due
 
 PSEUDO CODE:
 
@@ -51,34 +50,34 @@ function generateTaskId() {
 function createTaskCard(task) {
   if (task.status == "done") {
     $('#done-cards').append(`
-      <div class = "task-card card m-4 mt-2">
+      <div class = "task-card card m-4 mt-2"  id=${task.taskId}>
         <h5 class="card-header">${task.title}</h5>
         <div class="card-body">
           <p class="card-text">${task.description}</p>
           <p class="card-text">${task.date}</p>
-          <button class="btn btn-danger delete" id=${task.taskId}>Delete</button>
+          <button class="btn btn-danger delete">Delete</button>
         </div>
       </div>
     `);
   } else if (task.status == "in-progress") {
     $('#in-progress-cards').append(`
-    <div class = "task-card card m-4 mt-2">
+    <div class = "task-card card m-4 mt-2"  id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
         <p class="card-text">${task.date}</p>
-        <button class="btn btn-danger delete" id=${task.taskId}>Delete</button>
+        <button class="btn btn-danger delete">Delete</button>
       </div>
     </div>
   `);
   } else {
     $('#todo-cards').append(`
-    <div class = "task-card card m-4 mt-2">
+    <div class = "task-card card m-4 mt-2"  id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
         <p class="card-text">${task.date}</p>
-        <button class="btn btn-danger delete" id=${task.taskId}>Delete</button>
+        <button class="btn btn-danger delete" id=>Delete</button>
       </div>
     </div>
   `);
@@ -89,6 +88,7 @@ function createTaskCard(task) {
   $('.task-card').draggable({
     revert: "invalid",
     zIndex: 100,
+    appendTo: '.drop',
   })
 }
 
@@ -98,6 +98,10 @@ function renderTaskList() {
     createTaskCard(task);
   });
 
+  // $('.task-card').draggable({
+  //   revert: "invalid",
+  //   zIndex: 100,
+  // })
 }
 
 // Todo: create a function to handle adding a new task
@@ -129,8 +133,8 @@ function handleAddTask(event){
 //So maybe... get id of button and make it a variable... get task from array with taskId == variable... delete that task from the array... update the array in storage... then delete the taskCard element.
 
 function handleDeleteTask(event){
-  //gets the id of the button (which matches its coordinating task's taskId)
-  let taskId = $(this).attr('id');
+  //gets the id of the task card (which I've set to coordinate with its task in storage, see createTaskCard function)
+  let taskId = $(this).parents('.task-card').attr('id');
   console.log(taskId);
   //finds the task in the array with matching taskId by it's index
   let toDelete = taskList.findIndex(task => task.taskId == taskId);
@@ -139,7 +143,7 @@ function handleDeleteTask(event){
   console.log(taskList);
   //saves the updated list back in storage
   localStorage.setItem('tasks', JSON.stringify(taskList));
-  //removes the grandparent .task-card of the delete button
+  //removes the grandparent .task-card of the delete button that was clicked
   const btnClicked = $(event.target);
   btnClicked.parents('.task-card').remove();
 }
@@ -149,7 +153,8 @@ function handleDeleteTask(event){
 // maybe when I drop it has to update the array, clear all the cards, and re render them? Then it'd be sorted... seems too messy to be right
 // so maybe... if get task of matching id... if dropped on #to-do-cards, change status property to todo, on #in-progress-cards change to in-progress, on #done change status to done AND remove extra classes from the element... update the task in the array... update the array in local storage
 function handleDrop(event, ui) {
-
+  // let taskId = $(this).
+  alert('dropped');
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
@@ -165,4 +170,32 @@ $(document).ready(function () {
 
   body.on('click', '.delete', handleDeleteTask);
 
+  $(".drop").droppable({
+    accept: '.task-card',
+    drop: function() {
+
+      handleDrop();
+    }
+
+  });
 });
+
+/*
+pseudo-code a drop:
+
+on drop...
+- get the object from the array that matches the id of the delete button (maybe I should put the id on the div instead of button?)
+- change that object's status attribute
+- update the array in storage
+
+- append the element to the new parent (see if that one div is taking whole space or not)
+- make the element snap in line
+  - maybe either make the element's position be relative to parent
+  - or maybe sort the parent according to id#
+  - or maybe look into the sortable attribute
+
+
+
+*/
+
+
