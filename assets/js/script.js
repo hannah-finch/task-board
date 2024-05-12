@@ -25,7 +25,9 @@ If a user clicks the delete button
 
 
 // This is an example task list so I could test the renderTaskList function.
-// const taskList = [{title : 'To do', description: 'test description', date: 'Test date', status: 'todo',}, {title : 'In progress', description: 'test description', date: 'Test date', status: 'in-progress',}, {title : 'Done', description: 'test description', date: 'Test date', status: 'done',},]
+// const taskList = [{title : 'To do', description: 'test description', date: 'Test date', status: 'todo', taskId: 1,}, {title : 'In progress', description: 'test description', date: 'Test date', status: 'in-progress', taskId: 2,}, {title : 'Done', description: 'test description', date: 'Test date', status: 'done', taskId: 3,},]
+
+
 
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
@@ -33,16 +35,15 @@ let nextId = JSON.parse(localStorage.getItem("nextId"));
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
-
+  nextId = $.now();
+  localStorage.setItem('nextId', nextId);
 }
-
+// the id of the card should be the same value as the taskId in storage, so I can find the card id to get the storage with same taskId to delete.
 // Todo: create a function to create a task card
-// This function makes a task card for a task and sorts it into the right column according to its status.
-// I can probably write this shorter, sine the only thing that's changing is where the card appends to, but look into that later.
 function createTaskCard(task) {
   if (task.status == "done") {
     $('#done-cards').append(`
-      <div class = "task-card card m-4 mt-2" id=${task.id}>
+      <div class = "task-card card m-4 mt-2" id=${task.taskId}>
         <h5 class="card-header">${task.title}</h5>
         <div class="card-body">
           <p class="card-text">${task.description}</p>
@@ -53,7 +54,7 @@ function createTaskCard(task) {
     `);
   } else if (task.status == "in-progress") {
     $('#in-progress-cards').append(`
-    <div class = "task-card card m-4 mt-2" id=${task.id}>
+    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
@@ -64,7 +65,7 @@ function createTaskCard(task) {
   `);
   } else {
     $('#todo-cards').append(`
-    <div class = "task-card card m-4 mt-2" id=${task.id}>
+    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
@@ -75,16 +76,15 @@ function createTaskCard(task) {
   `);
   }
 
+  generateTaskId();
+
   $('.task-card').draggable({
     revert: "invalid",
+    zIndex: 100,
   })
 }
 
-
-
 // Todo: create a function to render the task list and make cards draggable
-// This will run the createTaskCard function for every task in the taskList. This function will run on page load
-// The todo suggestion is to make the cards draggable in this function, but I did it in the createTaskCard function so it would apply to new cards as well
 function renderTaskList() {
   taskList.forEach(task => {
     createTaskCard(task);
@@ -95,6 +95,7 @@ function renderTaskList() {
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
   // this function should use form data to make a new task, add it to the taskList, and maybe also create a card for it?
+
   const taskTitleInput = $('#task-title');
   const taskDescriptionInput = $('#task-description');
   const taskDateInput = $('#task-date');
@@ -104,6 +105,7 @@ function handleAddTask(event){
     description : taskDescriptionInput.val(),
     date : taskDateInput.val(),
     status : 'todo',
+    taskId : nextId,
   }
 
   taskList.push(task);
@@ -126,15 +128,14 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
+
   renderTaskList();
 
   const submitTask = $('#submit-task');
 
-  submitTask.on('click', function (event) {
+  submitTask.on('click', function(event) {
     event.preventDefault();
     handleAddTask();
-    // generateTaskId();
-    // createTaskCard();
-  })
+  });
 
 });
