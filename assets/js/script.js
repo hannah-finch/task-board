@@ -1,4 +1,10 @@
 /*
+Left to do:
+- Write delete function
+- Write handle drop function
+- Make lanes droppable
+- Make date input fancy with jQuery ui
+
 PSEUDO CODE:
 
 After the page loads:
@@ -117,11 +123,17 @@ function handleAddTask(event){
 }
 
 // Todo: create a function to handle deleting a task
+// How I'm thinking this might work... I know I can delete the element from the page by getting the button's parents with class .taskCard. I also need to get task from array with taskID matching the id of the card. Actually, moving that id off the card and on to the button instead should save a step.
+//So maybe... get id of button and make it a variable... get task from array with taskId == variable... delete that task from the array... update the array in storage... then delete the taskCard element.
+
 function handleDeleteTask(event){
 
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
+// when something is dropped, it's status attribute should update, if dropped in done, it's extra background/text color classes and such should be removed... Wait I have to have it saved in local, so I'll have to get the task with matching Id as a variable, change its status property, and save it back into storage... It's in an array, so I'll probably have to reset the whole array with that object updated
+// maybe when I drop it has to update the array, clear all the cards, and re render them? Then it'd be sorted... seems too messy to be right
+// so maybe... if get task of matching id... if dropped on #to-do-cards, change status property to todo, on #in-progress-cards change to in-progress, on #done change status to done AND remove extra classes from the element... update the task in the array... update the array in local storage
 function handleDrop(event, ui) {
 
 }
@@ -132,7 +144,6 @@ $(document).ready(function () {
   renderTaskList();
 
   const submitTask = $('#submit-task');
-
   submitTask.on('click', function(event) {
     event.preventDefault();
     handleAddTask();
