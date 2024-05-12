@@ -16,7 +16,6 @@ body {
 }
 
 .drop {
-  border: 5px solid red;
   /* set height to 100% so it fills the lane and things can drop on it */
   height: 100%;
 }

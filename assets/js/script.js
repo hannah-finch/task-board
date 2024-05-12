@@ -30,7 +30,7 @@ If a user clicks the delete button
 
 
 // This is an example task list so I could test the renderTaskList function.
-// const taskList = [{title : 'To do', description: 'test description', date: 'Test date', status: 'todo', taskId: 1,}, {title : 'In progress', description: 'test description', date: 'Test date', status: 'in-progress', taskId: 2,}, {title : 'Done', description: 'test description', date: 'Test date', status: 'done', taskId: 3,},]
+// const taskList = [{title : 'To do', description: 'test description', date: 'Test date', status: 'todo-cards', taskId: 1,}, {title : 'In progress', description: 'test description', date: 'Test date', status: 'in-progress-cards', taskId: 2,}, {title : 'Done', description: 'test description', date: 'Test date', status: 'done-cards', taskId: 3,},]
 
 
 
@@ -48,7 +48,7 @@ function generateTaskId() {
 // the id of the card should be the same value as the taskId in storage, so I can find the card id to get the storage with same taskId to delete.
 // Todo: create a function to create a task card
 function createTaskCard(task) {
-  if (task.status == "done") {
+  if (task.status == "done-cards") {
     $('#done-cards').append(`
       <div class = "task-card card m-4 mt-2" id=${task.taskId}>
         <h5 class="card-header">${task.title}</h5>
@@ -59,7 +59,7 @@ function createTaskCard(task) {
         </div>
       </div>
     `);
-  } else if (task.status == "in-progress") {
+  } else if (task.status == "in-progress-cards") {
     $('#in-progress-cards').append(`
     <div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
@@ -178,40 +178,19 @@ $(document).ready(function () {
     drop: function(event, ui) {
       // gets the id of the dropped task so I can change it in the array
       let taskId = ui.draggable.attr('id');
-      // alert(taskId);
       // finds the task in the array with matching taskId by it's index
       let toChange = taskList.find(task => task.taskId == taskId);
-      toChange.status = 'test';
+      // gets the id of the lane it's dropped on and makes that the task's status
+      let newStatus = $(this).attr('id');
+      toChange.status = newStatus;
+
       console.log(toChange);
       localStorage.setItem('tasks', JSON.stringify(taskList));
       console.log(taskList);
 
-      // this seems to be working to change the status when dropped. Now I need to get it to change according to where it is dropped
-
-
-
-      // function handleDeleteTask(event){
-      //   //gets the id of the task card (which I've set to coordinate with its task in storage, see createTaskCard function)
-      //   let taskId = $(this).parents('.task-card').attr('id');
-      //   console.log(taskId);
-
-      //   //finds the task in the array with matching taskId by it's index
-      //   let toDelete = taskList.findIndex(task => task.taskId == taskId);
-
-      //   //deletes the task from the tasklist
-      //   taskList.splice(toDelete, 1);
-
-      //   console.log(taskList);
-      //   //saves the updated list back in storage
-      
-      //   localStorage.setItem('tasks', JSON.stringify(taskList));
-      //   //removes the grandparent .task-card of the delete button that was clicked
-      //   const btnClicked = $(event.target);
-      //   btnClicked.parents('.task-card').remove();
-      // }
-
-
-
+      // reloads the page so the cards are rendered in their lanes, not overlapping and not hidden under the lane.
+      // I bet there is a better way to do this... running the renderTaskList function again will duplicate all the cards, so I'd have to clear all the cards first. It also leaves the dropped card (duplicated) right where it is. Changing the css position of the dropped card to relative has so far not worked either.
+      location.reload();
 
       handleDrop();
     }
