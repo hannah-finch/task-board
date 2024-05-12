@@ -39,6 +39,8 @@ If a user clicks the delete button
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
+const body = $('body');
+
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
   nextId = $.now();
@@ -49,34 +51,34 @@ function generateTaskId() {
 function createTaskCard(task) {
   if (task.status == "done") {
     $('#done-cards').append(`
-      <div class = "task-card card m-4 mt-2" id=${task.taskId}>
+      <div class = "task-card card m-4 mt-2">
         <h5 class="card-header">${task.title}</h5>
         <div class="card-body">
           <p class="card-text">${task.description}</p>
           <p class="card-text">${task.date}</p>
-          <button class="btn btn-danger delete">Delete</button>
+          <button class="btn btn-danger delete" id=${task.taskId}>Delete</button>
         </div>
       </div>
     `);
   } else if (task.status == "in-progress") {
     $('#in-progress-cards').append(`
-    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
+    <div class = "task-card card m-4 mt-2">
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
         <p class="card-text">${task.date}</p>
-        <button class="btn btn-danger delete">Delete</button>
+        <button class="btn btn-danger delete" id=${task.taskId}>Delete</button>
       </div>
     </div>
   `);
   } else {
     $('#todo-cards').append(`
-    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
+    <div class = "task-card card m-4 mt-2">
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
         <p class="card-text">${task.date}</p>
-        <button class="btn btn-danger delete">Delete</button>
+        <button class="btn btn-danger delete" id=${task.taskId}>Delete</button>
       </div>
     </div>
   `);
@@ -127,7 +129,19 @@ function handleAddTask(event){
 //So maybe... get id of button and make it a variable... get task from array with taskId == variable... delete that task from the array... update the array in storage... then delete the taskCard element.
 
 function handleDeleteTask(event){
-
+  //gets the id of the button (which matches its coordinating task's taskId)
+  let taskId = $(this).attr('id');
+  console.log(taskId);
+  //finds the task in the array with matching taskId by it's index
+  let toDelete = taskList.findIndex(task => task.taskId == taskId);
+  //deletes the task from the tasklist
+  taskList.splice(toDelete, 1);
+  console.log(taskList);
+  //saves the updated list back in storage
+  localStorage.setItem('tasks', JSON.stringify(taskList));
+  //removes the grandparent .task-card of the delete button
+  const btnClicked = $(event.target);
+  btnClicked.parents('.task-card').remove();
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
@@ -148,5 +162,7 @@ $(document).ready(function () {
     event.preventDefault();
     handleAddTask();
   });
+
+  body.on('click', '.delete', handleDeleteTask);
 
 });
