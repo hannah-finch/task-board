@@ -3,6 +3,7 @@ Left to do:
 - Write handle drop function
 - Make date input fancy with jQuery ui
 - Make color change when due and past due
+- Make add task modal button also close modal
 
 PSEUDO CODE:
 
@@ -46,41 +47,39 @@ function generateTaskId() {
   localStorage.setItem('nextId', nextId);
 }
 // the id of the card should be the same value as the taskId in storage, so I can find the card id to get the storage with same taskId to delete.
+
+
 // Todo: create a function to create a task card
 function createTaskCard(task) {
-  if (task.status == "done-cards") {
-    $('#done-cards').append(`
-      <div class = "task-card card m-4 mt-2" id=${task.taskId}>
-        <h5 class="card-header">${task.title}</h5>
-        <div class="card-body">
-          <p class="card-text">${task.description}</p>
-          <p class="card-text">${task.date}</p>
-          <button class="btn btn-danger delete">Delete</button>
-        </div>
-      </div>
-    `);
-  } else if (task.status == "in-progress-cards") {
-    $('#in-progress-cards').append(`
-    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
+  // // const today = dayjs();
+  // // let dueDate= dayjs(task.date);
+
+  // // if (dueDate.isSame(today, 'day')) {
+  // // maybe get element of matching id and change color
+  //   let dueTask = taskList.find(task => (dayjs(task.date) == dayjs()));
+
+  //   let dueTaskId = dueTask.id;
+  //   console.log(dueTaskId);
+  //   // $(`#${dueTaskId}`).addClass('bg-warning text-white');
+
+  
+
+  const taskCardEl =
+  (`<div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
         <p class="card-text">${task.date}</p>
         <button class="btn btn-danger delete">Delete</button>
       </div>
-    </div>
-  `);
+    </div>`);
+
+  if (task.status == "done-cards") {
+    $('#done-cards').append(taskCardEl);
+  } else if (task.status == "in-progress-cards") {
+    $('#in-progress-cards').append(taskCardEl);
   } else {
-    $('#todo-cards').append(`
-    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
-      <h5 class="card-header">${task.title}</h5>
-      <div class="card-body">
-        <p class="card-text">${task.description}</p>
-        <p class="card-text">${task.date}</p>
-        <button class="btn btn-danger delete" id=>Delete</button>
-      </div>
-    </div>
-  `);
+    $('#todo-cards').append(taskCardEl);
   }
 
   generateTaskId();
@@ -97,11 +96,6 @@ function renderTaskList() {
   taskList.forEach(task => {
     createTaskCard(task);
   });
-
-  // $('.task-card').draggable({
-  //   revert: "invalid",
-  //   zIndex: 100,
-  // })
 }
 
 // Todo: create a function to handle adding a new task
@@ -165,6 +159,19 @@ $(document).ready(function () {
 
   renderTaskList();
 
+  // make the input a date picker
+  $('#task-date').datepicker();
+
+  // use day.js to determine if task should be changed color
+  // function cardColor() {
+  //   let dueDate= task.date;
+  //   if (dueDate.isToday()) {
+  //     $('.task-card').addClass('bg-warning text-white')
+  //   }
+  // }
+
+
+
   const submitTask = $('#submit-task');
   submitTask.on('click', function(event) {
     event.preventDefault();
@@ -190,6 +197,7 @@ $(document).ready(function () {
 
       // reloads the page so the cards are rendered in their lanes, not overlapping and not hidden under the lane.
       // I bet there is a better way to do this... running the renderTaskList function again will duplicate all the cards, so I'd have to clear all the cards first. It also leaves the dropped card (duplicated) right where it is. Changing the css position of the dropped card to relative has so far not worked either.
+      //Oh maybe....innerHTML="" and then renderTaskList. Try that later
       location.reload();
 
       handleDrop();
