@@ -50,7 +50,7 @@ function generateTaskId() {
 function createTaskCard(task) {
   if (task.status == "done") {
     $('#done-cards').append(`
-      <div class = "task-card card m-4 mt-2"  id=${task.taskId}>
+      <div class = "task-card card m-4 mt-2" id=${task.taskId}>
         <h5 class="card-header">${task.title}</h5>
         <div class="card-body">
           <p class="card-text">${task.description}</p>
@@ -61,7 +61,7 @@ function createTaskCard(task) {
     `);
   } else if (task.status == "in-progress") {
     $('#in-progress-cards').append(`
-    <div class = "task-card card m-4 mt-2"  id=${task.taskId}>
+    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
@@ -72,7 +72,7 @@ function createTaskCard(task) {
   `);
   } else {
     $('#todo-cards').append(`
-    <div class = "task-card card m-4 mt-2"  id=${task.taskId}>
+    <div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
       <div class="card-body">
         <p class="card-text">${task.description}</p>
@@ -153,8 +153,11 @@ function handleDeleteTask(event){
 // maybe when I drop it has to update the array, clear all the cards, and re render them? Then it'd be sorted... seems too messy to be right
 // so maybe... if get task of matching id... if dropped on #to-do-cards, change status property to todo, on #in-progress-cards change to in-progress, on #done change status to done AND remove extra classes from the element... update the task in the array... update the array in local storage
 function handleDrop(event, ui) {
-  // let taskId = $(this).
-  alert('dropped');
+  // let thisCard = $(this);
+  // let taskId = $('.task-card').attr('id');
+
+  // let taskId = ui.draggable.attr('id');
+  // alert(taskId);
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
@@ -172,7 +175,43 @@ $(document).ready(function () {
 
   $(".drop").droppable({
     accept: '.task-card',
-    drop: function() {
+    drop: function(event, ui) {
+      // gets the id of the dropped task so I can change it in the array
+      let taskId = ui.draggable.attr('id');
+      // alert(taskId);
+      // finds the task in the array with matching taskId by it's index
+      let toChange = taskList.find(task => task.taskId == taskId);
+      toChange.status = 'test';
+      console.log(toChange);
+      localStorage.setItem('tasks', JSON.stringify(taskList));
+      console.log(taskList);
+
+      // this seems to be working to change the status when dropped. Now I need to get it to change according to where it is dropped
+
+
+
+      // function handleDeleteTask(event){
+      //   //gets the id of the task card (which I've set to coordinate with its task in storage, see createTaskCard function)
+      //   let taskId = $(this).parents('.task-card').attr('id');
+      //   console.log(taskId);
+
+      //   //finds the task in the array with matching taskId by it's index
+      //   let toDelete = taskList.findIndex(task => task.taskId == taskId);
+
+      //   //deletes the task from the tasklist
+      //   taskList.splice(toDelete, 1);
+
+      //   console.log(taskList);
+      //   //saves the updated list back in storage
+      
+      //   localStorage.setItem('tasks', JSON.stringify(taskList));
+      //   //removes the grandparent .task-card of the delete button that was clicked
+      //   const btnClicked = $(event.target);
+      //   btnClicked.parents('.task-card').remove();
+      // }
+
+
+
 
       handleDrop();
     }
