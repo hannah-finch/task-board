@@ -114,9 +114,10 @@ $(".drop").droppable({
     // get the id of the dropped task so I can change it in the array
     let taskId = ui.draggable.attr('id');
     // find the task in the array with matching taskId by it's index
-    let toChange = taskList.find(task => task.taskId == taskId);
+    let toChange = taskList.find(task => JSON.stringify(task.taskId == taskId));
     // get the id of the lane it's dropped on and makes that the task's new status
-    toChange.status = $(this).attr('id');
+    let newStatus = $(this).attr('id');
+    toChange.status = newStatus;
     // update the task list in local storage
     localStorage.setItem('tasks', JSON.stringify(taskList));
 
