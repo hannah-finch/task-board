@@ -128,8 +128,10 @@ $(".drop").droppable({
 
 // on page load...
 $(document).ready(function () {
-  //render task cards
-  renderTaskList();
+  //render task cards if there are some in storage
+  if (taskList != []) {
+    renderTaskList();
+  }
 
   // make the date input a date picker
   $('#task-date').datepicker();
