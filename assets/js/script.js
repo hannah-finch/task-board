@@ -1,25 +1,22 @@
 /*
 Ideas for improvement
 - Sort taskList by due date instead of index so due soon goes to top of list
-- Get the cards to drop in place without reloading the page... running the renderTaskList function again will duplicate all the cards, so I'd have to clear all the cards first. It also leaves the dropped card (duplicated) right where it is. Changing the css position of the dropped card to relative has so far not worked either.
-Oh maybe....innerHTML="" and then renderTaskList. Try that later
 */
 
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
-// Generate a unique task id
-// This is vital to delete and arrange tasks
+// Generate a unique task id, vital to delete and sort tasks
 function generateTaskId() {
   // generate nextId by getting it's timestamp, save in storage
   nextId = $.now();
   localStorage.setItem('nextId', nextId);
 }
 
-// Todo: create a function to create a task card
+// Function to create a task card
 function createTaskCard(task) {
- 
+  // create the card structure
   const taskCardEl =
   $(`<div class = "task-card card m-4 mt-2" id=${task.taskId}>
       <h5 class="card-header">${task.title}</h5>
@@ -30,14 +27,12 @@ function createTaskCard(task) {
       </div>
     </div>`);
 
-  // append card to right section (maybe this could go in render function?)
-  if (task.status == "done-cards") {
+  // append card to section coordinating with it's status property
+  if (task.status === "done-cards") {
     $('#done-cards').append(taskCardEl);
-  } 
-  else if (task.status == "in-progress-cards") {
+  } else if (task.status === "in-progress-cards") {
     $('#in-progress-cards').append(taskCardEl);
-  } 
-  else {
+  } else {
     $('#todo-cards').append(taskCardEl);
   }
 
@@ -46,7 +41,7 @@ function createTaskCard(task) {
   let dueDate= dayjs(task.date);
   
   // only adds class if not done
-  if (task.status != "done-cards") {
+  if (task.status !== "done-cards") {
     if (dueDate.isSame(today, 'day')) {
       taskCardEl.addClass('bg-warning text-white')
     } else if (dueDate.isBefore(today, 'day')) {
@@ -54,7 +49,7 @@ function createTaskCard(task) {
     }
   }
   
-  // generate a new taskID each time a task is made
+  // generate a new taskID each time a new task is made
   generateTaskId();
 
   // make the task cards draggable
@@ -65,65 +60,75 @@ function createTaskCard(task) {
   })
 }
 
-// Todo: create a function to render the task list and make cards draggable
+// Function to render the task list. This creates a task card for each task in the array.
 function renderTaskList() {
   taskList.forEach(task => {
     createTaskCard(task);
-    // cardColor(task);
   });
 }
 
-// Todo: create a function to handle adding a new task
+// Function to handle adding a new task
 function handleAddTask(event){
-  // this function should use form data to make a new task, add it to the taskList, and maybe also create a card for it?
-
+  // get input data
   const taskTitleInput = $('#task-title');
   const taskDescriptionInput = $('#task-description');
   const taskDateInput = $('#task-date');
-
+  // create a new task
   let task = {
     title : taskTitleInput.val(),
     description : taskDescriptionInput.val(),
     date : taskDateInput.val(),
-    status : 'todo',
+    // the status will change when dropped in a new lane
+    status : 'todo-cards',
+    // the taskId will be used to connect the task card element with its coordinating task in the taskList in local storage. Important for changing status and deleting.
     taskId : nextId,
   }
 
+  // add the new task to the array and save to local storage
   taskList.push(task);
   localStorage.setItem('tasks', JSON.stringify(taskList));
-
-  console.log(taskList);
-
+  // create a card for the new task
   createTaskCard(task);
 }
 
 // Function to handle deleting a task
-
 function handleDeleteTask(event){
-  //gets the id of the task card (which I've set to coordinate with its task in storage, see createTaskCard function)
+  //get the id of the task card (which I've set to coordinate with its task in storage, see createTaskCard function)
   let taskId = $(this).parents('.task-card').attr('id');
-  console.log(taskId);
-  //finds the task in the array with matching taskId by it's index
+  //find the task in the array with matching taskId by it's index
   let toDelete = taskList.findIndex(task => task.taskId == taskId);
-  //deletes the task from the tasklist
+  //delete the task from the tasklist
   taskList.splice(toDelete, 1);
-  console.log(taskList);
-  //saves the updated list back in storage
+  //save the updated list back in storage
   localStorage.setItem('tasks', JSON.stringify(taskList));
-  //removes the grandparent .task-card of the delete button that was clicked
+  //remove the grandparent .task-card of the delete button that was clicked
   const btnClicked = $(event.target);
   btnClicked.parents('.task-card').remove();
 }
 
-// Todo: create a function to handle dropping a task into a new status lane
-// I actually wrote this below on page load, consider moving it here, or delete this function
-function handleDrop(event, ui) {
+//make lanes droppable
+$(".drop").droppable({
+  accept: '.task-card',
+  // function to handle dropping a task into a new status lane
+  drop: function(event, ui) {
+    // get the id of the dropped task so I can change it in the array
+    let taskId = ui.draggable.attr('id');
+    // find the task in the array with matching taskId by it's index
+    let toChange = taskList.find(task => task.taskId == taskId);
+    // get the id of the lane it's dropped on and makes that the task's new status
+    toChange.status = $(this).attr('id');
+    // update the task list in local storage
+    localStorage.setItem('tasks', JSON.stringify(taskList));
 
-}
+    // clears and then re-renders task cards so the dropped card will appear in place in the new lane
+    $('.drop').html("");
+    renderTaskList();
+  }
+});
 
-// When the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+// on page load...
 $(document).ready(function () {
-  //render task cards on page load
+  //render task cards
   renderTaskList();
 
   // make the date input a date picker
@@ -139,29 +144,5 @@ $(document).ready(function () {
   // handleDeleteTask on click of any delete button in body
   const body = $('body');
   body.on('click', '.delete', handleDeleteTask);
-
-  $(".drop").droppable({
-    accept: '.task-card',
-    drop: function(event, ui) {
-      // gets the id of the dropped task so I can change it in the array
-      let taskId = ui.draggable.attr('id');
-      // finds the task in the array with matching taskId by it's index
-      let toChange = taskList.find(task => task.taskId == taskId);
-      // gets the id of the lane it's dropped on and makes that the task's status
-      let newStatus = $(this).attr('id');
-      toChange.status = newStatus;
-
-      console.log(toChange);
-      localStorage.setItem('tasks', JSON.stringify(taskList));
-      console.log(taskList);
-
-      // reloads the page so the cards are rendered in their lanes, not overlapping and not hidden under the lane.
-      location.reload();
-
-      // Currently this function is not necessary
-      handleDrop();
-    }
-
-  });
 });
 
