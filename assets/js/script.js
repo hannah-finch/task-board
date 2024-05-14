@@ -1,18 +1,8 @@
-/*
-Ideas for improvement
-- Sort taskList by due date instead of index so due soon goes to top of list
-*/
-
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
-let nextId = JSON.parse(localStorage.getItem("nextId"));
+// I removed the nextId variable from the starter code because I could generate unique id's inside the handleAddTask function with fewer lines of code
+// let nextId = JSON.parse(localStorage.getItem("nextId"));
 
-// Generate a unique task id, vital to delete and sort tasks
-function generateTaskId() {
-  // generate nextId by getting it's timestamp, save in storage
-  nextId = $.now();
-  localStorage.setItem('nextId', nextId);
-}
 
 // Function to create a task card
 function createTaskCard(task) {
@@ -28,9 +18,9 @@ function createTaskCard(task) {
     </div>`);
 
   // append card to section coordinating with it's status property
-  if (task.status === "done-cards") {
+  if (task.status == "done-cards") {
     $('#done-cards').append(taskCardEl);
-  } else if (task.status === "in-progress-cards") {
+  } else if (task.status == "in-progress-cards") {
     $('#in-progress-cards').append(taskCardEl);
   } else {
     $('#todo-cards').append(taskCardEl);
@@ -49,9 +39,6 @@ function createTaskCard(task) {
     }
   }
   
-  // generate a new taskID each time a new task is made
-  generateTaskId();
-
   // make the task cards draggable
   $('.task-card').draggable({
     revert: "invalid",
@@ -80,8 +67,8 @@ function handleAddTask(event){
     date : taskDateInput.val(),
     // the status will change when dropped in a new lane
     status : 'todo-cards',
-    // the taskId will be used to connect the task card element with its coordinating task in the taskList in local storage. Important for changing status and deleting.
-    taskId : nextId,
+    // the taskId will be used to connect the task card element with its coordinating task in the taskList in local storage. Important for changing status and deleting. The id is generated using a timestamp.
+    taskId : $.now(),
   }
 
   // add the new task to the array and save to local storage
@@ -114,11 +101,12 @@ $(".drop").droppable({
     // get the id of the dropped task so I can change it in the array
     let taskId = ui.draggable.attr('id');
     // find the task in the array with matching taskId by it's index
-    let toChange = taskList.find(task => JSON.stringify(task.taskId == taskId));
-    // get the id of the lane it's dropped on and makes that the task's new status
+    let toChange = taskList.findIndex(task => (task.taskId == taskId));
+    // get the id of the lane it's dropped on and save in a variable
     let newStatus = $(this).attr('id');
-    toChange.status = newStatus;
-    // update the task list in local storage
+    // update the task's status to newStatus
+    taskList[toChange].status = newStatus;
+    // save the updated task list in local storage
     localStorage.setItem('tasks', JSON.stringify(taskList));
 
     // clears and then re-renders task cards so the dropped card will appear in place in the new lane
@@ -148,4 +136,3 @@ $(document).ready(function () {
   const body = $('body');
   body.on('click', '.delete', handleDeleteTask);
 });
-
